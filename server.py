@@ -11,6 +11,7 @@ import paramiko
 import json
 import time
 
+os.chdir(os.path.dirname(__file__))
 raw_config=open('data/config.json').read()
 config = json.loads(raw_config)
 
