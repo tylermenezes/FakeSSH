@@ -27,3 +27,5 @@ If you're on Ubuntu, you could create an upstart script at `/etc/init/fakessh.co
 # Future Plans
 
 In the previous version of this (which was written in C++, but full of memory leaks), statistics about attempted logins were tracked. This made for an awesome MOTD on the real SSH port. At some point, it would be cool to re-add that functionality.
+
+This should also *really* be dropping root permissions after opening the port if running as root.
