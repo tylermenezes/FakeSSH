@@ -1,0 +1,6 @@
+{
+    "log": "data/log",
+    "key": "data/rsa",
+    "port": 22,
+    "banner": "hello, welcome to my internet home!\r\nplease don't guess my password!"
+}
