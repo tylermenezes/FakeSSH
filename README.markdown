@@ -32,6 +32,6 @@ If you're on Ubuntu, you could create an upstart script at `/etc/init/fakessh.co
     respawn
     exec python /opt/fakessh/server.py
 
-# Future Plans
+## Graphing
 
-In the previous version of this (which was written in C++, but full of memory leaks), statistics about attempted logins were tracked. This made for an awesome MOTD on the real SSH port. At some point, it would be cool to re-add that functionality.
+If you enable logging, you can run `python stats.py` to get statistics about login attempts. `--today` will get you the count today, and `--hist` will produce a graph of the last week. (You can use them both together.)
