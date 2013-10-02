@@ -73,4 +73,5 @@ if sys.argv.__contains__('--hist'):
         date = datetime.datetime.fromtimestamp(bin[0]).strftime('%m/%d')
         sys.stdout.write(date + (' ' * (padding + 1)))
 
+print ""
 sys.exit(0)
