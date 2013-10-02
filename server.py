@@ -18,8 +18,19 @@ raw_config=open('data/config.json').read()
 config = json.loads(raw_config)
 host_key = paramiko.RSAKey(filename=config['key'])
 
+# Set up logging
+paramiko.util.log_to_file('data/error_log')
+log_pipe = None
 if (config['log'] is not False):
-    paramiko.util.log_to_file(config['log'])
+    log_pipe = open(config['log'], "a")
+
+def log_event(event_type, data = None):
+    if (log_pipe is not None):
+        try:
+            log_pipe.write(str(int(time.time())) + "\t" + event_type + "\t" + str(data) + "\n")
+            log_pipe.flush()
+        except:
+            pass
 
 class Server (paramiko.ServerInterface):
     def __init__(self):
@@ -35,14 +46,19 @@ class Server (paramiko.ServerInterface):
         if self.has_authenticated_before:
             return paramiko.AUTH_FAILED
         else:
+            log_event('a_inter')
             self.has_authenticated_before = True
             return paramiko.InteractiveQuery('', config['banner'])
 
     def check_auth_password(self, username, password):
+        log_event('a_password')
+        log_event('username', username)
+        log_event('password', password)
         time.sleep(3)
         return paramiko.AUTH_FAILED
 
     def check_auth_publickey(self, username, key):
+        log_event('a_pkey')
         time.sleep(3)
         return paramiko.AUTH_FAILED
 
@@ -85,7 +101,7 @@ def incoming_connection(client):
             return
 
         # Wait for auth
-        t.accept(20)
+        t.accept(60)
         try:
             t.close()
         except:
@@ -111,9 +127,13 @@ except Exception, e:
     traceback.print_exc()
 
 # Drop privileges
-os.setgroups([])
-os.setgid(grp.getgrnam('nogroup').gr_gid)
-os.setuid(pwd.getpwnam('nobody').pw_uid)
+if os.getuid() == 0:
+    try:
+        os.setgroups([])
+        os.setgid(grp.getgrnam('nogroup').gr_gid)
+        os.setuid(pwd.getpwnam('nobody').pw_uid)
+    except:
+        print("CAUTION: could not drop root!")
 
 # Start listening for connections
 server_listening = True
@@ -130,3 +150,5 @@ while server_listening:
         traceback.print_exc()
 
 sock.close()
+if (log_pipe is not None):
+    log_pipe.close()
