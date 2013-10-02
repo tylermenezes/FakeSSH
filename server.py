@@ -10,10 +10,13 @@ import traceback
 import paramiko
 import json
 import time
+import pwd
+import grp
 
-os.chdir(os.path.dirname(__file__))
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 raw_config=open('data/config.json').read()
 config = json.loads(raw_config)
+host_key = paramiko.RSAKey(filename=config['key'])
 
 if (config['log'] is not False):
     paramiko.util.log_to_file(config['log'])
@@ -21,7 +24,6 @@ if (config['log'] is not False):
 class Server (paramiko.ServerInterface):
     def __init__(self):
         self.event = threading.Event()
-        self.host_key = paramiko.RSAKey(filename=config['key'])
         self.has_authenticated_before = False
 
     def check_channel_request(self, kind, chanid):
@@ -71,7 +73,7 @@ def incoming_connection(client):
 
         # Start the server & negotiate with the client
         server = Server()
-        t.add_server_key(server.host_key)
+        t.add_server_key(host_key)
         try:
             t.start_server(server=server)
         except paramiko.SSHException, x:
@@ -107,6 +109,11 @@ try:
 except Exception, e:
     print 'Could not bind to port: ' + str(e)
     traceback.print_exc()
+
+# Drop privileges
+os.setgroups([])
+os.setgid(grp.getgrnam('nogroup').gr_gid)
+os.setuid(pwd.getpwnam('nobody').pw_uid)
 
 # Start listening for connections
 server_listening = True
