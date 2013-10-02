@@ -2,9 +2,13 @@
 
 FakeSSH is an SSH server which denies all login requests sent its way. It's the result of literally minutes of work.
 
-There are a lot of automated brute-force SSH bots which look for servers with port 22 open. Many people already use a different SSH port, anyway, but this ignores an opportunity to mess with spam bots. This might also prevent a targeted attack by an attacker with very little skill.
+Move your real SSH server to a different port, then run the FakeSSH server.
 
-In a sense, FakeSSH is based on the idea that security through obscurity is actually very very slightly better than no security at all.
+## Why?
+
+In a sense, FakeSSH is based on the idea that security through obscurity is kind of like adding a single bit to your security, the value of which is widely known. It might actually prevent a targeted attack by an unskilled attacker.
+
+Mostly, though, I just like the idea that someone is wasting time trying to log into a server which will literally never let them in.
 
 ## Requirements
 
