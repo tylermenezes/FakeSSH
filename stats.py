@@ -18,7 +18,7 @@ if (config['log'] is False):
 
 with open(config['log'], 'r') as content_file:
     content = content_file.read()
-records = [dict(zip(['time', 'type', 'data'], line.split("\t", 3))) for line in content.rstrip("\n").split("\n")]
+records = [dict(zip(['time', 'type', 'data'], line.split("\t", 3))) for line in content.lstrip("\n").rstrip("\n").split("\n")]
 login_records = filter(lambda x: x['type'] == 'username', records)
 
 date_bins = {}
@@ -72,3 +72,5 @@ if sys.argv.__contains__('--hist'):
     for bin in sorted_bins:
         date = datetime.datetime.fromtimestamp(bin[0]).strftime('%m/%d')
         sys.stdout.write(date + (' ' * (padding + 1)))
+
+sys.exit(0)
