@@ -79,7 +79,8 @@ class Server (paramiko.ServerInterface):
 def incoming_connection(client):
     try:
         t = paramiko.Transport(client)
-
+        t.local_version = 'SSH-2.0-OpenSSH_4.3'
+        
         # Try to load server moduli for gex
         try:
             t.load_server_moduli()
