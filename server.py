@@ -14,7 +14,7 @@ import pwd
 import grp
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
-raw_config=open('data/config.json').read()
+raw_config = open('data/config.json').read()
 config = json.loads(raw_config)
 host_key = paramiko.RSAKey(filename=config['key'])
 
@@ -24,6 +24,7 @@ log_pipe = None
 if (config['log'] is not False):
     log_pipe = open(config['log'], "a")
 
+
 def log_event(event_type, data = None):
     if (log_pipe is not None):
         try:
@@ -32,7 +33,8 @@ def log_event(event_type, data = None):
         except:
             pass
 
-class Server (paramiko.ServerInterface):
+
+class Server(paramiko.ServerInterface):
     def __init__(self):
         self.event = threading.Event()
         self.has_authenticated_before = False
@@ -76,16 +78,17 @@ class Server (paramiko.ServerInterface):
                                   pixelheight, modes):
         return True
 
+
 def incoming_connection(client):
     try:
         t = paramiko.Transport(client)
         t.local_version = 'SSH-2.0-OpenSSH_4.3'
-        
+
         # Try to load server moduli for gex
         try:
             t.load_server_moduli()
         except:
-            print 'Failed to load moduli -- gex will be unsupported.'
+            print('Failed to load moduli -- gex will be unsupported.')
             raise
 
         # Start the server & negotiate with the client
@@ -93,8 +96,8 @@ def incoming_connection(client):
         t.add_server_key(host_key)
         try:
             t.start_server(server=server)
-        except paramiko.SSHException, x:
-            print 'SSH negotiation failed.'
+        except paramiko.SSHException as x:
+            print('SSH negotiation failed.')
             try:
                 t.close()
             except:
@@ -109,8 +112,8 @@ def incoming_connection(client):
             pass
         return
 
-    except Exception, e:
-        print 'Caught exception: ' + str(e.__class__) + ': ' + str(e)
+    except Exception as e:
+        print('Caught exception: ' + str(e.__class__) + ': ' + str(e))
         traceback.print_exc()
         try:
             t.close()
@@ -123,8 +126,8 @@ try:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind(('', config['port']))
-except Exception, e:
-    print 'Could not bind to port: ' + str(e)
+except Exception as e:
+    print('Could not bind to port: ' + str(e))
     traceback.print_exc()
 
 # Drop privileges
@@ -141,13 +144,13 @@ server_listening = True
 while server_listening:
     try:
         sock.listen(100)
-        print 'Waiting for connection.'
+        print('Waiting for connection.')
         client, addr = sock.accept()
 
-        print 'Client connected!'
+        print('Client connected!')
         threading.Thread(target=incoming_connection, args=[client]).start()
-    except Exception, e:
-        print "Couldn't wait for connection: " + str(e)
+    except Exception as e:
+        print("Couldn't wait for connection: " + str(e))
         traceback.print_exc()
 
 sock.close()
